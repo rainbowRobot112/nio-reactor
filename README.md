@@ -1,2 +1,2 @@
 # nio-reactor
-nio reactor server
+主从 reactor 多线程模型的实现
