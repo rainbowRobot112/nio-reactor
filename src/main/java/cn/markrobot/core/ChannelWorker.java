@@ -29,6 +29,12 @@ public class ChannelWorker implements Runnable {
             byte[] writeBytes;
             try {
                 byte[] data = worker.decode(channel);
+                // -1, 表示连接已经断开
+                if (worker.getLastReadSize() == -1) {
+                    System.out.println("Connection down, remoteIp: " + channel.getRemoteAddress());
+                    channel.close();
+                    return;
+                }
                 if (data == null) {
                     // 还没读完, 等待下次 select 再继续读数据
                     key.interestOps(SelectionKey.OP_READ);

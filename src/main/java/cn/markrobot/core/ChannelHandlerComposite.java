@@ -15,6 +15,7 @@ public class ChannelHandlerComposite {
     private final ByteBuffer lengthByteBuffer = ByteBuffer.allocate(LENGTH_BYTE);
     private ByteBuffer messageByteBuffer;
     private ByteBuffer remainingWriteBuffer;
+    private int lastReadSize = 0;
 
     public ChannelHandlerComposite(ChannelHandler handler) {
         this.channelHandler = handler;
@@ -43,6 +44,7 @@ public class ChannelHandlerComposite {
     private byte[] readReadyData(SocketChannel channel) throws IOException {
         if (checkAndCreateMessageByteBuffer(channel)) {
             int read = ChannelUtil.readChannel(channel, messageByteBuffer);
+            lastReadSize = read;
             if (read > 0 && isByteBufferFull(messageByteBuffer)) {
                 messageByteBuffer.flip();
                 byte[] bytes = messageByteBuffer.array();
@@ -83,5 +85,9 @@ public class ChannelHandlerComposite {
 
     public void removeRemainingWriteBuffer() {
         remainingWriteBuffer = null;
+    }
+
+    public int getLastReadSize() {
+        return lastReadSize;
     }
 }
